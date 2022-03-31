@@ -29,9 +29,11 @@ REGISTRY.register(CustomServiceExporter())
 @app.route("/metric-reciever",methods=["POST"])
 def track_metric():
     data = request.json
-    new_errors = data['errors']
-    CustomServiceExporter.stored_errors_count['errors'] = CustomServiceExporter \
-            .stored_errors_count.get('errors', 0) + new_errors
+    # new_errors = data['errors']
+    for key in data:
+        CustomServiceExporter.stored_errors_count[key] = CustomServiceExporter \
+                .stored_errors_count.get(key, 0) + data[key]
+
 
     return Response(status=200)
 
