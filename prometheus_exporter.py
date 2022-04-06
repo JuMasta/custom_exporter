@@ -25,4 +25,4 @@ class CustomServiceExporter(object):
                 namespace_name = self.stored_errors_count[pod][level]['namespace_name']
                 count = self.stored_errors_count[pod][level]['count']
                 errors_total.add_metric([pod, namespace_name ,level ],count)
-                yield errors_total
+        yield errors_total
