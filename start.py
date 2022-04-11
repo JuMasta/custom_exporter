@@ -13,13 +13,6 @@ def track_metric():
     data_json = request.json
     namespaces_obj = data_json['namespace_names']
 
-    # for namespace in namespaces_obj:
-    #     for pod in namespaces_obj[namespace]:
-    #         pod_obj = CustomServiceExporter.stored_errors_count.get(pod, {})
-    #         pod_obj['pod_name'] = pod
-    #         pod_obj['namespace_name'] = namespace
-    #         pod_obj['count'] = pod_obj.get('count',0) + namespaces_obj[namespace][pod]
-    #         CustomServiceExporter.stored_errors_count[pod] = pod_obj
 
     for namespace in namespaces_obj:
         for pod in namespaces_obj[namespace]:
@@ -27,12 +20,9 @@ def track_metric():
                 pod_obj = CustomServiceExporter.stored_errors_count.get(pod, {})
                 level_obj = pod_obj.get(level , {})
                 level_obj['namespace_name'] = namespace
-                # print(namespaces_obj[namespace][pod][level])
                 level_obj['count'] = level_obj.get('count',0) + namespaces_obj[namespace][pod][level]
                 pod_obj[level] = level_obj
                 CustomServiceExporter.stored_errors_count[pod] = pod_obj
-                print(CustomServiceExporter.stored_errors_count)
-            # namespaces_obj[pod] = pod_obj
 
     return Response(status=200)
 
@@ -41,5 +31,10 @@ def track_metric():
 def metrics():
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
+
+@app.route("/clean-metrics", methods=["POST"])
+def clean_metrics():
+    CustomServiceExporter.stored_errors_count = {}
+    return Response(status=200)
 
 app.run(host='0.0.0.0', port=80)
